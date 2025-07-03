@@ -3,8 +3,9 @@ vendor
 node_modules
 dist
 coverage
-build
+build/
 *.log
 *.tmp
 _*
 .env
+.vscode/

@@ -17,7 +17,7 @@ kill_jobs() {
 # Trap to call kill_jobs on script exit
 trap kill_jobs EXIT
 
-socat TCP-LISTEN:8088,fork,reuseaddr TCP:e2e-tests-bdd:8088 > /tmp/socat-e2e-tests-bdd-8088.log 2>&1 &
+socat TCP-LISTEN:8080,fork,reuseaddr TCP:application-backend:8080 > /tmp/socat-application-backend-8080.log 2>&1 &
 bg_pids+=("$!")
 
-docker compose -f docker-compose.yml up e2e-tests-bdd 2>&1
+docker compose -f local/docker-compose.yml up application-backend 2>&1

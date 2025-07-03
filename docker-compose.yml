@@ -61,11 +61,11 @@ services:
       - .env
     environment:
       GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS:-/workspaces/refactored-winner/.devcontainer/gcloud/infra/application_default_credentials.json}
-      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-moov-dev-439608}
-      GCLOUD_PROJECT_ID: ${GCLOUD_PROJECT_ID:-moov-dev-439608}
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-${GOOGLE_CLOUD_PROJECT_ID}}
+      GCLOUD_PROJECT_ID: ${GCLOUD_PROJECT_ID:-${GOOGLE_CLOUD_PROJECT_ID}}
       VEGETABLE_IMAGES_BACKEND_PUBSUB_SUBSCRIPTION: ${LOCAL_FIREBASE_EMULATORS_PUBSUB_VEGETABLE_IMAGES_VALIDATED_BACKEND_SUBSCRIPTION:-vegetable-images-validated-backend}
-      UI_CONFIG_FIREBASE_SECRET_ID: ${UI_CONFIG_FIREBASE_SECRET_ID:-projects/moov-dev-439608/secrets/firebase-config-web/versions/2}
-      UI_CONFIG_GOOGLEMAPS_SECRET_ID: ${UI_CONFIG_GOOGLEMAPS_SECRET_ID:-projects/moov-dev-439608/secrets/google-maps-api-key/versions/1}
+      UI_CONFIG_FIREBASE_SECRET_ID: ${UI_CONFIG_FIREBASE_SECRET_ID:-projects/${GOOGLE_CLOUD_PROJECT_ID}/secrets/firebase-config-web/versions/2}
+      UI_CONFIG_GOOGLEMAPS_SECRET_ID: ${UI_CONFIG_GOOGLEMAPS_SECRET_ID:-projects/${GOOGLE_CLOUD_PROJECT_ID}/secrets/google-maps-api-key/versions/1}
       VEGETABLE_CREATED_IMAGES_MODERATOR_PUBSUB_TOPIC: ${LOCAL_FIREBASE_EMULATORS_PUBSUB_VEGETABLE_IMAGES_CREATED_TOPIC:-vegetable-images-created}
       VEGETABLE_VALIDATED_IMAGES_BACKEND_PUBSUB_SUBSCRIPTION: ${LOCAL_FIREBASE_EMULATORS_PUBSUB_VEGETABLE_IMAGES_VALIDATED_BACKEND_SUBSCRIPTION:-vegetable-images-validated-backend}
       VEGETABLE_VALIDATED_IMAGES_CDN_PREFIX_URL: ${LOCAL_FIREBASE_EMULATORS_VEGETABLE_IMAGES_CDN_PREFIX_URL:-https://vegetable-images-cdn-prefix-url}
@@ -78,7 +78,7 @@ services:
 
   firebase-emulators:
     container_name: firebase-emulators
-    image: ${FIREBASE_EMULATORS_IMAGE:-europe-west1-docker.pkg.dev/moov-dev-439608/docker-repository-public/moov-dev-439608:firebase-emulators-latest}
+    image: ${FIREBASE_EMULATORS_IMAGE:-europe-west1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT_ID}/docker-repository-public/${GOOGLE_CLOUD_PROJECT_ID}:firebase-emulators-latest}
     # Cannot build while Dockerfile base image (see FROM ...) is using new local builder image (for conveniance and accuracy) that could not be pulled yet.
     # build: NOT
     env_file:
@@ -103,7 +103,7 @@ services:
     container_name: clarinet-devnet
     privileged: true
     tty: true
-    image: ${CLARINET_DEVNET_IMAGE:-europe-west1-docker.pkg.dev/moov-dev-439608/docker-repository-public/moov-dev-439608:clarinet-latest}
+    image: ${CLARINET_DEVNET_IMAGE:-europe-west1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT_ID}/docker-repository-public/${GOOGLE_CLOUD_PROJECT_ID}:clarinet-latest}
     # Cannot build while Dockerfile base image (see FROM ...) is using new local builder image (for conveniance and accuracy) that could not be pulled yet.
     # build: NOT
     env_file:
@@ -130,7 +130,7 @@ services:
     container_name: android-studio
     cap_add:
       - SYS_ADMIN
-    image: ${ANDROID_STUDIO_IMAGE:-europe-west1-docker.pkg.dev/moov-dev-439608/docker-repository-public/moov-dev-439608:android-studio-latest}
+    image: ${ANDROID_STUDIO_IMAGE:-europe-west1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT_ID}/docker-repository-public/${GOOGLE_CLOUD_PROJECT_ID}:android-studio-latest}
     env_file:
       - .env
     environment:
@@ -181,7 +181,7 @@ services:
   vault-dev:
     container_name: vault-dev
     # image: hashicorp/vault:1.19
-    image: ${VAULT_DEV_IMAGE:-europe-west1-docker.pkg.dev/moov-dev-439608/docker-repository-public/moov-dev-439608:vault-dev-latest}
+    image: ${VAULT_DEV_IMAGE:-europe-west1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT_ID}/docker-repository-public/${GOOGLE_CLOUD_PROJECT_ID}:vault-dev-latest}
 
     cap_add:
       - IPC_LOCK
@@ -206,7 +206,7 @@ services:
 
   application-tests:
     container_name: application-tests
-    image: ${APPLICATION_TESTS_IMAGE:-europe-west1-docker.pkg.dev/moov-dev-439608/docker-repository-private/moov-dev-439608:application-tests-latest}
+    image: ${APPLICATION_TESTS_IMAGE:-europe-west1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT_ID}/docker-repository-private/${GOOGLE_CLOUD_PROJECT_ID}:application-tests-latest}
     environment:
       APPLICATION_BACKEND_URL_DEBUG: http://devcontainer:8888
       STORAGE_EMULATOR_HOST: http://${FIREBASE_STORAGE_EMULATOR_HOST:-firebase-emulators:9199}

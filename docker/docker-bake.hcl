@@ -52,7 +52,8 @@ variable "PUBLIC_REPOSITORY" {
 }
 
 variable "GOOGLE_CLOUD_PROJECT_ID" {
-  default = "default"
+  description = "Google Cloud Project ID"
+  default     = "moov-dev-439608"
 }
 
 variable "PUBLIC_IMAGES_BASE" {
@@ -66,7 +67,7 @@ variable "PRIVATE_IMAGES_BASE" {
 variable "platforms" {
   default = [
     "linux/amd64",
-   // "linux/arm64"
+    "linux/arm64"
   ]
 }
 

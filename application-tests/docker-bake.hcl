@@ -1,9 +1,9 @@
 variable "APPLICATION_TESTS_IMAGES_BASE" {
-  default = "${PRIVATE_IMAGES_BASE}:application-tests"
+  default = "${PUBLIC_IMAGES_BASE}:application-tests"
 }
 
 variable "APPLICATION_TESTS_IMAGE_VERSION" {
-  default = notequal("dev", VERSION) ? "${PRIVATE_IMAGES_BASE}:application-tests-${VERSION}" : ""
+  default = notequal("dev", VERSION) ? "${PUBLIC_IMAGES_BASE}:application-tests-${VERSION}" : ""
 }
 
 variable "LATEST_APPLICATION_TESTS_IMAGE" {
