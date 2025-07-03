@@ -1,13 +1,13 @@
 FROM golang:alpine AS go-build
 
-COPY local/proxy proxy
+COPY proxy proxy
 
 RUN cd proxy \
-    && GOBIN=/usr/local/bin go install -v
+    && GOBIN=/usr/bin go install -v
 
 FROM debian:bookworm
 
-COPY --from=go-build /usr/local/bin/proxy /usr/local/bin/localproxy 
+COPY --from=go-build /usr/bin/proxy /usr/bin/localproxy 
 
 RUN apt-get update && apt-get install -y \
     apt-transport-https \
@@ -68,7 +68,7 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
 # Terraform
 ARG terraform_version=1.11.2
 RUN curl -OL https://releases.hashicorp.com/terraform/${terraform_version}/terraform_${terraform_version}_linux_amd64.zip \
-    && unzip terraform_${terraform_version}_linux_amd64.zip -d /usr/local/bin/ \
+    && unzip terraform_${terraform_version}_linux_amd64.zip -d /usr/bin/ \
     && rm terraform_${terraform_version}_linux_amd64.zip
 
 # kubectl
@@ -102,7 +102,7 @@ RUN case "$TARGETPLATFORM" in \
     && curl -o- https://dl.google.com/go/${archive} | tar xz -C /usr/local --
 
 ENV CGO_ENABLED=1
-ENV PATH=${PATH}:/usr/local/go/bin
+ENV PATH=${PATH}:/usr/go/bin
 
 ARG docker_version
 ARG docker_compose_version
@@ -124,7 +124,7 @@ RUN \
     tar --extract \
     --file docker.tgz \
     --strip-components 1 \
-    --directory /usr/local/bin/ \
+    --directory /usr/bin/ \
     --no-same-owner \
     'docker/docker' \
     ; \
@@ -149,7 +149,7 @@ RUN \
     wget -O 'docker-buildx' "$url"; \
     echo "$sha256 *"'docker-buildx' | sha256sum -c -; \
     \
-    plugin='/usr/local/libexec/docker/cli-plugins/docker-buildx'; \
+    plugin='/usr/libexec/docker/cli-plugins/docker-buildx'; \
     mkdir -p "$(dirname "$plugin")"; \
     mv -vT 'docker-buildx' "$plugin"; \
     chmod +x "$plugin"; \
@@ -174,12 +174,12 @@ RUN \
     wget -O 'docker-compose' "$url"; \
     echo "$sha256 *"'docker-compose' | sha256sum -c -; \
     \
-    plugin='/usr/local/libexec/docker/cli-plugins/docker-compose'; \
+    plugin='/usr/libexec/docker/cli-plugins/docker-compose'; \
     mkdir -p "$(dirname "$plugin")"; \
     mv -vT 'docker-compose' "$plugin"; \
     chmod +x "$plugin"; \
     \
-    ln -sv "$plugin" /usr/local/bin/; \
+    ln -sv "$plugin" /usr/bin/; \
     docker-compose --version; \
     docker compose version
 
@@ -225,6 +225,5 @@ ENV PATH=$NVM_DIR/versions/node/v${node_version}/bin:$PATH
 RUN ln -sf /usr/bin/bash /bin/sh
 USER ${non_root_user}
 
-COPY local/entrypoint.sh /usr/local/bin/local-entrypoint.sh
-COPY local/dotenv.sh /usr/local/bin/local-dotenv.sh
-ENTRYPOINT [ "local-entrypoint.sh" ]
+COPY entrypoint.sh /usr/bin/dev-entrypoint.sh
+ENTRYPOINT [ "dev-entrypoint.sh" ]

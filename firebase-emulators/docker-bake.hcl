@@ -18,7 +18,7 @@ target "firebase-emulators-ci" {
   args = {
     builder_image = LATEST_BUILDER_IMAGE
   }
-  context = "local/firebase-emulators"
+  context = "firebase-emulators"
   tags = [
     LATEST_FIREBASE_EMULATORS_IMAGE,
     FIREBASE_EMULATORS_IMAGE_TAG,
@@ -35,7 +35,7 @@ target "firebase-emulators" {
   args = {
     builder_image = LATEST_BUILDER_IMAGE
   }
-  context = "local/firebase-emulators"
+  context = "firebase-emulators"
   tags = [
     LATEST_FIREBASE_EMULATORS_IMAGE,
     FIREBASE_EMULATORS_IMAGE_TAG,

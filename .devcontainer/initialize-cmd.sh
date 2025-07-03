@@ -8,7 +8,7 @@ set -eu
 trap "echo Exited with code $?." EXIT
 
 # Create default local .env file with minimum required values to start.
-localDotenvFile=${PWD}/local/.env
+localDotenvFile=${PWD}/.env
 
 [ -f $localDotenvFile ] || cat <<'EOF' > $localDotenvFile
 ######################################################################## 
@@ -138,19 +138,19 @@ workspaceFile=${PWD}/vscode.code-workspace
     },
     {
       "name": "Local - Firebase Emulators",
-      "path": "local/firebase-emulators"
+      "path": "firebase-emulators"
     },
     {
       "name": "Local - Android Studio",
-      "path": "local/android-studio"
+      "path": "android-studio"
     },
     {
       "name": "Local - Vault",
-      "path": "local/vault-dev"
+      "path": "vault-dev"
     },
     {
       "name": "Local - Clarinet",
-      "path": "local/clarinet-devnet"
+      "path": "clarinet-devnet"
     },
     {
       "name": "Infrastructure - Cloud",
@@ -217,7 +217,7 @@ cat <<'EOF' > $backendLaunchDebug
                 "VEGETABLE_VALIDATED_IMAGES_BACKEND_PUBSUB_SUBSCRIPTION": "vegetable-images-validated-backend",
                 "VEGETABLE_VALIDATED_IMAGES_CDN_PREFIX_URL": "https://validated-images-cdn-prefix-url",
             },
-            "envFile": "${workspaceFolder}/../../local/.env",
+            "envFile": "${workspaceFolder}/../../.env",
         }
     ]
 }
@@ -271,7 +271,7 @@ cat <<'EOF' > $mobileLaunchDebug
 EOF
 fi
 
-CONTAINERS_CACHE_DIR=${PWD}/local/.containers
+CONTAINERS_CACHE_DIR=${PWD}/.containers
 mkdir -p ${CONTAINERS_CACHE_DIR}
 
 # Cache of container 'dev'
@@ -279,5 +279,5 @@ mkdir -p ${CONTAINERS_CACHE_DIR}/dev
 
 # Copy config from host files.
 if [ -d ~/.emacs.d ]; then
-    rsync -av ~/.emacs.d ${CONTAINERS_CACHE_DIR}/local/emacs
+    rsync -av ~/.emacs.d ${CONTAINERS_CACHE_DIR}/emacs
 fi

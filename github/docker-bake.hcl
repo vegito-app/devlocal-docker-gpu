@@ -31,7 +31,7 @@ target "github-action-runner-ci" {
     github_runner_version  = GITHUB_ACTION_RUNNER_VERSION
   }
   depends_on = [builder]
-  context    = "local/github"
+  context    = "github"
   tags = [
     LATEST_GITHUB_RUNNER_IMAGE,
     notequal("", VERSION) ? GITHUB_RUNNER_IMAGE_VERSION : "",
@@ -64,7 +64,7 @@ target "github-action-runner" {
     github_runner_version  = GITHUB_ACTION_RUNNER_VERSION
   }
   depends_on = [builder-local]
-  context    = "local/github"
+  context    = "github"
   tags = [
     LATEST_GITHUB_RUNNER_IMAGE,
     notequal("", VERSION) ? GITHUB_RUNNER_IMAGE_VERSION : "",

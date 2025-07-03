@@ -11,10 +11,10 @@ services:
     env_file:
       - .env
     environment:
-      HOST_PWD: ${PWD:-/workspaces}
+      HOST_PWD: ${PWD:-/workspaces/refactored-winner}
       MAKE_DEV_ON_START: ${MAKE_DEV_ON_START:-true}
     volumes:
-      - ${PWD:-/workspaces}:${PWD:-/workspaces}:cached
+      - ${PWD:-/workspaces/refactored-winner}:${PWD:-/workspaces/refactored-winner}:cached
       - /var/run/docker.sock:/var/run/docker.sock
       - /dev:/dev
       - /lib/modules:/lib/modules:ro
@@ -22,7 +22,7 @@ services:
     cap_add:
       - SYS_ADMIN
       - NET_ADMIN
-    working_dir: ${PWD:-/workspaces}
+    working_dir: ${PWD:-/workspaces/refactored-winner}
     command: |
       bash -c '
       make docker-sock
@@ -47,6 +47,35 @@ services:
       dev:
         aliases:
           - devcontainer
+
+  application-backend:
+    restart: unless-stopped
+    image: ${APPLICATION_BACKEND_IMAGE:-europe-west1-docker.pkg.dev/moov-438615/docker-repository/utrade:application-backend-latest}
+    build:
+      context: ..
+      dockerfile: application/backend/Dockerfile
+      args:
+        builder_image: ${BUILDER_IMAGE}
+
+    env_file:
+      - .env
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS:-/workspaces/refactored-winner/.devcontainer/gcloud/infra/application_default_credentials.json}
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-moov-dev-439608}
+      GCLOUD_PROJECT_ID: ${GCLOUD_PROJECT_ID:-moov-dev-439608}
+      VEGETABLE_IMAGES_BACKEND_PUBSUB_SUBSCRIPTION: ${LOCAL_FIREBASE_EMULATORS_PUBSUB_VEGETABLE_IMAGES_VALIDATED_BACKEND_SUBSCRIPTION:-vegetable-images-validated-backend}
+      UI_CONFIG_FIREBASE_SECRET_ID: ${UI_CONFIG_FIREBASE_SECRET_ID:-projects/moov-dev-439608/secrets/firebase-config-web/versions/2}
+      UI_CONFIG_GOOGLEMAPS_SECRET_ID: ${UI_CONFIG_GOOGLEMAPS_SECRET_ID:-projects/moov-dev-439608/secrets/google-maps-api-key/versions/1}
+      VEGETABLE_CREATED_IMAGES_MODERATOR_PUBSUB_TOPIC: ${LOCAL_FIREBASE_EMULATORS_PUBSUB_VEGETABLE_IMAGES_CREATED_TOPIC:-vegetable-images-created}
+      VEGETABLE_VALIDATED_IMAGES_BACKEND_PUBSUB_SUBSCRIPTION: ${LOCAL_FIREBASE_EMULATORS_PUBSUB_VEGETABLE_IMAGES_VALIDATED_BACKEND_SUBSCRIPTION:-vegetable-images-validated-backend}
+      VEGETABLE_VALIDATED_IMAGES_CDN_PREFIX_URL: ${LOCAL_FIREBASE_EMULATORS_VEGETABLE_IMAGES_CDN_PREFIX_URL:-https://vegetable-images-cdn-prefix-url}
+      VAULT_ADDR: http://vault-dev:8200
+      VAULT_TOKEN: root
+    volumes:
+      - ${PWD:-/workspaces/refactored-winner}:${PWD:-/workspaces/refactored-winner}:cached
+    networks:
+      - dev
+
   firebase-emulators:
     container_name: firebase-emulators
     image: ${FIREBASE_EMULATORS_IMAGE:-europe-west1-docker.pkg.dev/moov-dev-439608/docker-repository-public/moov-dev-439608:firebase-emulators-latest}
@@ -59,9 +88,9 @@ services:
       FIREBASE_PUBSUB_EMULATOR_HOST: http://localhost:8085
       FIRESTORE_EMULATOR_HOST: http://localhost:8090
     volumes:
-      - ${HOST_PWD:-${PWD:-/workspaces}}:${PWD:-/workspaces}:cached
+      - ${HOST_PWD:-${PWD:-/workspaces/refactored-winner}}:${PWD:-/workspaces/refactored-winner}:cached
       # - firebase-emulators-cache:/home/devuser/.cache/firebase/emulators
-    working_dir: ${PWD:-/workspaces}
+    working_dir: ${PWD:-/workspaces/refactored-winner}
     command: |
       bash -c '
       set -eu
@@ -84,11 +113,11 @@ services:
     volumes:
       - /dev:/dev
       - /lib/modules:/lib/modules
-      - ${HOST_PWD:-${PWD:-/workspaces}}:${PWD:-/workspaces}:cached
+      - ${HOST_PWD:-${PWD:-/workspaces/refactored-winner}}:${PWD:-/workspaces/refactored-winner}:cached
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
-    working_dir: ${PWD:-/workspaces}/local/clarinet-devnet
+    working_dir: ${PWD:-/workspaces}/clarinet-devnet
     command: |
       bash -c '
       set -eu
@@ -105,8 +134,9 @@ services:
     env_file:
       - .env
     environment:
-      PROJECT_DIR: ${PWD:-/workspaces}
+      PROJECT_DIR: ${PWD:-/workspaces/refactored-winner}
       APK_PATH: ${LOCAL_ANDROID_STUDIO_APK_PATH:-mobile/build/app/outputs/flutter-apk/app-debug.apk}
+      # DISPLAY_RESOLUTION: "${DISPLAY_RESOLUTION:-1920x1080}"
       DISPLAY_RESOLUTION: 1920x1080
       DISPLAY_NUMBER: "${DISPLAY_NUMBER:-:20}"
       DISPLAY: "${DISPLAY:-:20}"
@@ -116,10 +146,10 @@ services:
       ANDROID_STUDIO_ENV_SETUP: ${ANDROID_STUDIO_ENV_SETUP:-false}
       ANDROID_GPU_MODE: ${LOCAL_ANDROID_STUDIO_ANDROID_GPU_MODE:-swiftshader_indirect}
       ANDROID_AVD_NAME: ${LOCAL_ANDROID_STUDIO_ANDROID_AVD_NAME:-Pixel_6_Playstore}
-      IMAGE_DIR: ${PWD:-/workspaces}/application/tests/mobile_images
+      IMAGE_DIR: ${PWD:-/workspaces/refactored-winner}/application/tests/mobile_images
     privileged: true
     volumes:
-      - ${HOST_PWD:-${PWD:-/workspaces}}:${PWD:-/workspaces}:cached
+      - ${HOST_PWD:-${PWD:-/workspaces/refactored-winner}}:${PWD:-/workspaces/refactored-winner}:cached
     devices:
       - /dev/kvm
       - /dev/nvidia0
@@ -129,7 +159,7 @@ services:
       - render
       - kvm
       - sgx
-    working_dir: ${PWD:-/workspaces}/application/mobile
+    working_dir: ${PWD:-/workspaces/refactored-winner}/application/mobile
     networks:
       dev:
     command: |
@@ -163,8 +193,8 @@ services:
       VAULT_DEV_ROOT_TOKEN_ID: root
       VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
     volumes:
-      - ${HOST_PWD:-${PWD:-/workspaces}}:${PWD:-/workspaces}:cached
-    working_dir: ${PWD:-/workspaces}
+      - ${HOST_PWD:-${PWD:-/workspaces/refactored-winner}}:${PWD:-/workspaces/refactored-winner}:cached
+    working_dir: ${PWD:-/workspaces/refactored-winner}
     command: |
       bash -c '
       set -eu
@@ -180,15 +210,15 @@ services:
     environment:
       APPLICATION_BACKEND_URL_DEBUG: http://devcontainer:8888
       STORAGE_EMULATOR_HOST: http://${FIREBASE_STORAGE_EMULATOR_HOST:-firebase-emulators:9199}
-      PROJECT_DIR: ${PWD:-/workspaces}
-      LOCAL_APPLICATION_TESTS_DIR: ${PWD:-/workspaces/e2e-tests-application}
+      PROJECT_DIR: ${PWD:-/workspaces/refactored-winner}
+      LOCAL_APPLICATION_TESTS_DIR: ${PWD:-/workspaces/refactored-winner}/application/tests
     env_file:
       - .env
     volumes:
-      - ${HOST_PWD:-${PWD:-/workspaces}}:${PWD:-/workspaces}:cached
+      - ${HOST_PWD:-${PWD:-/workspaces/refactored-winner}}:${PWD:-/workspaces/refactored-winner}:cached
     networks:
       dev:
-    working_dir: ${PWD:-/workspaces/e2e-tests-application}
+    working_dir: ${PWD:-/workspaces/refactored-winner}/application/tests
     tty: true
     command: |
       bash -c '

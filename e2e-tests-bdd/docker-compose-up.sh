@@ -20,4 +20,4 @@ trap kill_jobs EXIT
 socat TCP-LISTEN:8088,fork,reuseaddr TCP:e2e-tests-bdd:8088 > /tmp/socat-e2e-tests-bdd-8088.log 2>&1 &
 bg_pids+=("$!")
 
-docker compose -f local/docker-compose.yml up e2e-tests-bdd 2>&1
+docker compose -f docker-compose.yml up e2e-tests-bdd 2>&1

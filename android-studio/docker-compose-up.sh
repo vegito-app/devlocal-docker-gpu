@@ -22,4 +22,4 @@ socat TCP-LISTEN:5037,fork,reuseaddr TCP:android-studio:5037 >> /tmp/socat-andro
 socat TCP-LISTEN:9100,fork,reuseaddr TCP:android-studio:9100 >> /tmp/socat-android-studio-9100.log 2>&1 &
 
 bg_pids+=("$!")
-docker compose -f local/docker-compose.yml up android-studio 2>&1
+docker compose -f docker-compose.yml up android-studio 2>&1

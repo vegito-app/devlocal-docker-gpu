@@ -24,7 +24,7 @@ target "clarinet-devnet-ci" {
     docker_version   = DOCKER_VERSION
     clarinet_version = CLARINET_VERSION
   }
-  context    = "local/clarinet-devnet"
+  context    = "clarinet-devnet"
   dockerfile = "Dockerfile"
   tags = [
     LATEST_CLARINET_DEVNET_IMAGE,
@@ -44,7 +44,7 @@ target "clarinet-devnet" {
     docker_version   = DOCKER_VERSION
     clarinet_version = CLARINET_VERSION
   }
-  context    = "local/clarinet-devnet"
+  context    = "clarinet-devnet"
   dockerfile = "Dockerfile"
   tags = [
     LATEST_CLARINET_DEVNET_IMAGE,

@@ -7,7 +7,7 @@ variable "LATEST_VAULT_DEV_IMAGE" {
 }
 
 target "vault-dev-ci" {
-  context    = "local/vault-dev"
+  context    = "vault-dev"
   dockerfile = "Dockerfile"
   tags = [
     LATEST_VAULT_DEV_IMAGE,
@@ -29,7 +29,7 @@ variable "VAULT_DEV_IMAGE_DOCKER_BUILDX_LOCAL_CACHE_READ" {
 }
 
 target "vault-dev" {
-  context    = "local/vault-dev"
+  context    = "vault-dev"
   dockerfile = "Dockerfile"
   tags = [
     LATEST_VAULT_DEV_IMAGE,

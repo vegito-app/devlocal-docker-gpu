@@ -32,7 +32,7 @@ target "android-studio-ci" {
     android_ndk_version    = ANDROID_NDK_VERSION
     flutter_version        = FLUTTER_VERSION
   }
-  context    = "local/android-studio"
+  context    = "android-studio"
   dockerfile = "Dockerfile"
   tags = [
     LATEST_ANDROID_STUDIO_IMAGE,
@@ -51,7 +51,7 @@ target "android-studio" {
     android_ndk_version    = ANDROID_NDK_VERSION
     flutter_version        = FLUTTER_VERSION
   }
-  context    = "local/android-studio"
+  context    = "android-studio"
   dockerfile = "Dockerfile"
   tags = [
     LATEST_ANDROID_STUDIO_IMAGE,

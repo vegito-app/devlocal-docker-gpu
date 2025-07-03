@@ -1,10 +1,25 @@
 # local
+#### The Ultimate Remote Docker-based Development Environment
 
-Local development folder of any project - let's customize
+Integrate this repository into your project as a *local* or '.local* development environment folder, for example using git subtree.
 
-# 🧱 DevLocal Docker GPU Stack
+```bash
+git subtree add --prefix local https://github.com/vegito-app/devlocal-docker-gpu.git main --squash
+```
+Depending on your other project's assets, your project tree should now look like:
+```
+dev@94476426acc6:/workspaces/my-project$ tree -L 1 .
+.
+|-- CHANGELOG.md
+|-- Makefile
+|-- README.md
+|-- application
+|-- docs
+|-- infra
+|-- local  <----- your project now embeds a git subtree folder of this repository
+```
 
-Welcome to **DevLocal-Docker**, a fully portable, GPU-accelerated local development stack designed for high-performance Flutter + Android + GPU projects. This stack provides a complete development environment, including Android Studio with emulator support, GPU rendering, server-side rendering with V8Go, and full headless compatibility via Xpra + Xorg.
+![image](https://github.com/user-attachments/assets/2b24c0b6-d77d-45d1-a16d-e8b2b134601b)
 
 ---
 
@@ -18,6 +33,34 @@ Welcome to **DevLocal-Docker**, a fully portable, GPU-accelerated local developm
 - 🪄 **Devcontainers compatible** (VS Code, GitHub Codespaces)
 - 🌐 **Web-based GUI access** via Xpra HTML5
 - 🔄 **Composable Docker build system** with Makefile targets
+
+---
+
+## 🧭 Vision
+
+This project serves as the foundation for a powerful dev experience:
+
+- As a **portable open-source kit** for Android/GPU developers
+- As a **base layer** for building SaaS platforms:
+  - Provision remote GPU-powered Android workspaces
+  - Run ephemeral builds/tests with GPU emulation
+  - Power SSR previews for design+QA workflows
+
+---
+
+## 🧪 Use Cases
+
+- 🚀 Mobile emulator testing with real OpenGL (no CPU lag)
+- 🎥 Flutter + Maps integration preview
+- 🧠 ML inferencing with shared GPU
+- 🧪 CI pipelines with rendering tests
+- ☁️ Remote dev with full graphical support
+
+---
+
+# 🧱 DevLocal Docker GPU Stack
+
+Welcome to **DevLocal-Docker**, a fully portable, GPU-accelerated local development stack designed for high-performance Flutter + Android + GPU projects. This stack provides a complete development environment, including Android Studio with emulator support, GPU rendering, server-side rendering with V8Go, and full headless compatibility via Xpra + Xorg.
 
 ---
 
@@ -48,9 +91,9 @@ display-start-xpra.sh
 http://localhost:5900/
 ```
 
----
-
 ## 🖥️ GPU Acceleration (Success Example)
+
+To use GPU acceleration in Docker containers, installation steps are available here: [NVIDIA GPU Docker Setup for Debian Bookworm](docker/gpu)
 
 ```bash
 DISPLAY=:1 glxinfo | grep -E "renderer|OpenGL"
@@ -63,25 +106,67 @@ OpenGL core profile version string: 4.6.0 NVIDIA 535.247.01
 
 ---
 
-## 🧪 Use Cases
+## 🚀 Quick Start
 
-- 🚀 Mobile emulator testing with real OpenGL (no CPU lag)
-- 🎥 Flutter + Maps integration preview
-- 🧠 ML inferencing with shared GPU
-- 🧪 CI pipelines with rendering tests
-- ☁️ Remote dev with full graphical support
+```bash
+make dev
+```
+
+This command starts all services defined in `docker-compose.yml`, including:
+
+- the main `dev` container (your shell and workspace),
+- the application backend,
+- Firebase emulators,
+- Clarinet (smart contracts),
+- Android Studio,
+- Vault (dev mode).
+
+Once the `dev` container is running, you can execute all usual `make` commands **from inside the container**, or use automatic integration if you are in a **VSCode DevContainer**.
+
+> 💡 Tip: You can also launch the project via the "Open in Container" interface in VSCode, which automatically uses `make dev`.
 
 ---
 
-## 🧭 Vision
+## 🔐 GCP Authentication
 
-This project serves as the foundation of a powerful dev experience:
+To interact with cloud infrastructure (Firebase, Terraform, etc.), you need to authenticate.
 
-- As a **portable open-source kit** for Android/GPU developers
-- As a **base layer** for building SaaS platforms:
-  - Provision remote GPU-powered Android workspaces
-  - Run ephemeral builds/tests with GPU emulation
-  - Power SSR previews for design+QA workflows
+Use:
+
+```bash
+make gcloud-auth-login-sa
+```
+---
+
+## 🧰 Local Services: Available Commands
+
+Each service started via `docker-compose` has **dedicated `make` commands**. From inside the `dev` container, for example:
+
+```bash
+make android-studio-docker-compose-start     # Start Android Studio
+make android-studio-docker-compose-logs      # View logs
+make android-studio-docker-compose-sh        # Shell into the container
+make android-studio-docker-compose-stop      # Stop the service
+```
+
+The same logic applies to:
+
+- Clarinet (Clarity contracts)
+- Vault (secret storage)
+- Firebase Emulators
+- The Go backend, etc.
+
+#### Next steps
+
+* Add a VPN and/or SSH container to the container set to provide an integrated entrypoint usable from the internet with minimal configuration.
+
+---
+
+## 💡 Best Practices
+
+- The environment is designed to be **reproducible**, **shared**, and **modular**.
+- Feel free to create your own `make` commands or `.mk` files in `` as needed.
+- If you have any questions or suggestions for improvement: open an issue or contact the infra team.
 
 ---
 

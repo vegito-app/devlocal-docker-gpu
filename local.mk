@@ -1,7 +1,7 @@
 
 LATEST_BUILDER_IMAGE = $(PUBLIC_IMAGES_BASE):builder-latest
 
-LOCAL_DOCKER_COMPOSE = docker compose -f $(CURDIR)/local/docker-compose.yml
+LOCAL_DOCKER_COMPOSE = docker compose -f $(CURDIR)/docker-compose.yml
 
 local-application-install: application-frontend-build application-frontend-bundle backend-install 
 .PHONY: local-application-install
@@ -10,7 +10,7 @@ local-application-backend-install: $(APPLICATION_BACKEND_INSTALL_BIN) $(FRONTEND
 	@$(APPLICATION_BACKEND_INSTALL_BIN)
 .PHONY: local-application-backend-install
 
-BUILDER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE=$(CURDIR)/local/.containers/docker-buildx-cache/local-builder
+BUILDER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE=$(CURDIR)/.containers/docker-buildx-cache/local-builder
 $(BUILDER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE):;	@mkdir -p "$@"
 ifneq ($(wildcard $(BUILDER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE)/index.json),)
 BUILDER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE_READ = type=local,src=$(BUILDER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE)
@@ -34,6 +34,7 @@ LOCAL_DOCKER_COMPOSE_SERVICES = \
   vault-dev \
   firebase-emulators \
   clarinet-devnet \
+  application-backend \
   application-tests
 
 local-docker-compose-up: $(LOCAL_DOCKER_COMPOSE_SERVICES)
@@ -75,9 +76,9 @@ $(LOCAL_DOCKER_COMPOSE_SERVICES:%=local-%-docker-compose-sh):
 	@$(LOCAL_DOCKER_COMPOSE) exec -it $(@:local-%-docker-compose-sh=%) bash
 .PHONY: $(LOCAL_DOCKER_COMPOSE_SERVICES:%=local-%-docker-compose-sh)
 
--include local/android-studio/android-studio.mk
--include local/clarinet-devnet/clarinet-devnet.mk
--include local/github/github.mk
--include local/firebase-emulators/firebase-emulators.mk
--include local/vault-dev/vault-dev.mk
--include local/application-tests/application-tests.mk
+-include android-studio/android-studio.mk
+-include clarinet-devnet/clarinet-devnet.mk
+-include github/github.mk
+-include firebase-emulators/firebase-emulators.mk
+-include vault-dev/vault-dev.mk
+-include application-tests/application-tests.mk

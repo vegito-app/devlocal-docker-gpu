@@ -10,7 +10,7 @@ export HISTSIZE=50000
 export HISTFILESIZE=100000
 EOF
 
-DEV_CONTAINER_CACHE=${PWD}/local/.containers/dev
+DEV_CONTAINER_CACHE=${PWD}/.containers/dev
 mkdir -p $DEV_CONTAINER_CACHE
 
 # GO

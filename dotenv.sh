@@ -8,7 +8,7 @@ set -eu
 trap "echo Exited with code $?." EXIT
 
 # Create default local .env file with minimum required values to start.
-localDotenvFile=${PWD}/local/.env
+localDotenvFile=${PWD}/.env
 
 [ -f $localDotenvFile ] || cat <<'EOF' > $localDotenvFile
 ######################################################################## 

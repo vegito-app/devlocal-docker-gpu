@@ -23,4 +23,4 @@ bg_pids+=("$!")
 socat TCP-LISTEN:8201,fork,reuseaddr TCP:vault-dev:8201 > /tmp/socat-vault-dev-8201.log 2>&1 &
 bg_pids+=("$!")
 
-docker compose -f local/docker-compose.yml up vault-dev 2>&1
+docker compose -f docker-compose.yml up vault-dev 2>&1

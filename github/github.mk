@@ -2,7 +2,7 @@ GITHUB_ACTIONS_RUNNER_STACK_ID = $(shell echo $$RANDOM)
 GITHUB_ACTIONS_RUNNER_STACK = github-actions-$(GITHUB_ACTIONS_RUNNER_STACK_ID)
 
 GITHUB_ACTIONS_RUNNER_IMAGE = $(PUBLIC_IMAGES_BASE):github-action-runner-latest
-GITHUB_ACTIONS_RUNNER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE=$(CURDIR)/local/.containers/docker-buildx-cache/infra-github
+GITHUB_ACTIONS_RUNNER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE=$(CURDIR)/.containers/docker-buildx-cache/infra-github
 $(GITHUB_ACTIONS_RUNNER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE):;	@mkdir -p "$@"
 ifneq ($(wildcard $(GITHUB_ACTIONS_RUNNER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE)/index.json),)
 GITHUB_ACTIONS_RUNNER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE_READ = type=local,src=$(GITHUB_ACTIONS_RUNNER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE)
@@ -28,7 +28,7 @@ github-action-runner-image-ci: docker-buildx-setup
 .PHONY: github-action-runner-image-ci
 
 GITHUB_DOCKER_COMPOSE := COMPOSE_PROJECT_NAME=$(GOOGLE_CLOUD_PROJECT_ID)-github-actions \
-  docker compose -f $(CURDIR)/local/github/docker-compose.yml
+  docker compose -f $(CURDIR)/github/docker-compose.yml
 
 github-action-runner-token-exist:
 	@if [ ! -v GITHUB_ACTIONS_RUNNER_TOKEN ] ; then \
@@ -53,7 +53,7 @@ LOCAL_GITHUB_ACT_SECRET_FILE := $(LOCAL_GITHUB_WORKFLOWS_DIR)/.secret
 
 $(LOCAL_GITHUB_ACT_SECRET_FILE):
 	@-rm -f $(LOCAL_GITHUB_ACT_SECRET_FILE) 2>&1
-	@-echo DEV_GCLOUD_SERVICE_KEY=$$(jq -c . $(CURDIR)/infra/environments/local/gcloud-credentials.json) >> $(LOCAL_GITHUB_ACT_SECRET_FILE)
+	@-echo DEV_GCLOUD_SERVICE_KEY=$$(jq -c . $(CURDIR)/infra/environments/gcloud-credentials.json) >> $(LOCAL_GITHUB_ACT_SECRET_FILE)
 	@-echo STAGING_GCLOUD_SERVICE_KEY=$$(jq -c . $(CURDIR)/infra/environments/staging/gcloud-credentials.json) >> $(LOCAL_GITHUB_ACT_SECRET_FILE) 2>/dev/null 
 	@-echo PRODUCTION_GCLOUD_SERVICE_KEY=$$(jq -c . $(CURDIR)/infra/environments/prod/gcloud-credentials.json) >> $(LOCAL_GITHUB_ACT_SECRET_FILE) 2>/dev/null
 

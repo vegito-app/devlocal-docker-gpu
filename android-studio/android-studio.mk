@@ -1,6 +1,6 @@
 DEV_DOCKER_COMPOSE_SERVICES += local-android-studio
 
-ANDROID_STUDIO_IMAGE_DOCKER_BUILDX_LOCAL_CACHE=$(CURDIR)/local/.containers/docker-buildx-cache/android-studio
+ANDROID_STUDIO_IMAGE_DOCKER_BUILDX_LOCAL_CACHE=$(CURDIR)/.containers/docker-buildx-cache/android-studio
 $(ANDROID_STUDIO_IMAGE_DOCKER_BUILDX_LOCAL_CACHE):;	@mkdir -p "$@"
 ifneq ($(wildcard $(ANDROID_STUDIO_IMAGE_DOCKER_BUILDX_LOCAL_CACHE)/index.json),)
 ANDROID_STUDIO_IMAGE_DOCKER_BUILDX_LOCAL_CACHE_READ = type=local,src=$(ANDROID_STUDIO_IMAGE_DOCKER_BUILDX_LOCAL_CACHE)
@@ -9,7 +9,7 @@ ANDROID_STUDIO_IMAGE_DOCKER_BUILDX_LOCAL_CACHE_WRITE= type=local,dest=$(ANDROID_
 ANDROID_STUDIO_IMAGE = ${PUBLIC_IMAGES_BASE}:android-studio-latest
 
 local-android-studio-docker-compose-up: local-android-studio-docker-compose-rm
-	@VERSION=latest $(CURDIR)/local/android-studio/docker-compose-up.sh &
+	@VERSION=latest $(CURDIR)/android-studio/docker-compose-up.sh &
 	@$(LOCAL_DOCKER_COMPOSE) logs android-studio
 	@echo
 	@echo Started Androïd studio display: 
@@ -67,7 +67,7 @@ local-android-studio-appium-emulator-avd:
 local-android-studio-emulator-dump: 
 	@$(LOCAL_ANDROID_STUDIO_DOCKER_COMPOSE_EXEC) bash -c ' \
 	  set -e ; \
-	  output_dir=$(CURDIR)/local/android-studio/_emulator_dump ; \
+	  output_dir=$(CURDIR)/android-studio/_emulator_dump ; \
 	  mkdir -p $$output_dir ; \
 	  cd $$output_dir ; \
 	  echo Capture android-studio mobile, outputs folder : $$(pwd) ; \
@@ -95,7 +95,7 @@ local-android-studio-emulator-data-load-mobile-images:
 	@bash -c ' \
 	set -e ; \
 	echo "Load android-studio emulator data, inputs folder : $$(pwd)" ; \
-	$(CURDIR)/local/android-studio/emulator-data-load.sh \
+	$(CURDIR)/android-studio/emulator-data-load.sh \
 		$(CURDIR)/application/tests/mobile_images ; \
 	'
 .PHONY: local-android-studio-emulator-data-load-mobile-images

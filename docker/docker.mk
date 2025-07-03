@@ -33,11 +33,11 @@ DOCKER_BUILDX_BAKE_IMAGES = \
 
 DOCKER_BUILDX_BAKE = docker buildx bake \
 	-f docker/docker-bake.hcl \
-	-f local/docker-bake.hcl \
-	$(DOCKER_BUILDX_BAKE_LOCAL_IMAGES:%=-f local/%/docker-bake.hcl) \
+	-f docker-bake.hcl \
+	$(DOCKER_BUILDX_BAKE_LOCAL_IMAGES:%=-f %/docker-bake.hcl) \
 	$(DOCKER_BUILDX_BAKE_APPLICATION_IMAGES_WORKERS_IMAGES:application-images-%=-f application/images/%/docker-bake.hcl) \
 	$(DOCKER_BUILDX_BAKE_APPLICATION_IMAGES:application-%=-f application/%/docker-bake.hcl) \
-	-f local/github/docker-bake.hcl
+	-f github/docker-bake.hcl
 
 docker-images-ci-multi-arch: docker-buildx-setup local-builder-image-ci
 	@$(DOCKER_BUILDX_BAKE) --print services-push-multi-arch

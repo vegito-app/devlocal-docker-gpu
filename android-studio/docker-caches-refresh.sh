@@ -2,7 +2,7 @@
 
 set -eu
 
-LOCAL_ANDROID_STUDIO=${PROJECT_DIR}/local/.containers/android-studio
+LOCAL_ANDROID_STUDIO=${PROJECT_DIR}/.containers/android-studio
 mkdir -p $LOCAL_ANDROID_STUDIO
 
 # Android Studio config
@@ -19,8 +19,8 @@ mkdir -p $LOCAL_ANDROID_STUDIO/.cache/Google ${HOME}/.cache
 ln -s $LOCAL_ANDROID_STUDIO/.cache/Google $ANDROID_STUDIO_CACHE
 
 # # Android Studio config (local)
-ANDROID_STUDIO_LOCAL_SHARE_CONFIG=${HOME}/.local/share/Google
-mkdir -p $LOCAL_ANDROID_STUDIO/localconfig ${HOME}/.local/share
+ANDROID_STUDIO_LOCAL_SHARE_CONFIG=${HOME}/.share/Google
+mkdir -p $LOCAL_ANDROID_STUDIO/localconfig ${HOME}/.share
 ln -s $LOCAL_ANDROID_STUDIO/localconfig $ANDROID_STUDIO_LOCAL_SHARE_CONFIG
 
 # Android Studio Gradle config

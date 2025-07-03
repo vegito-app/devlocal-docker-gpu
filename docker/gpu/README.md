@@ -1,13 +1,16 @@
-Voici un contenu complet et professionnel pour ton README.md dans le dossier docker/, qui décrit proprement les deux scripts et leur usage :
-
-⸻
-
-
 # NVIDIA GPU Docker Setup for Debian Bookworm
 
 This directory contains helper scripts to set up NVIDIA GPU support for Docker containers on **Debian Bookworm** systems. These scripts automate the installation of the NVIDIA drivers and the NVIDIA Container Toolkit so you can leverage GPU acceleration inside Docker containers.
 
 ## Scripts
+
+⚠️ System Requirements
+* Debian Bookworm
+* NVIDIA GPU hardware
+* Docker installed on the system
+
+⚠️ Limitations
+* These scripts are designed for bare metal hosts, not for virtualized environments without direct GPU passthrough.
 
 ### 1️⃣ `nvidia-gpu-debian-driver-install.sh`
 
@@ -24,6 +27,7 @@ Installs the NVIDIA GPU driver and required firmware for Debian Bookworm.
 ✅ **Usage:**
 ```bash
 sudo ./nvidia-gpu-debian-driver-install.sh
+```
 
 ➡️ A reboot is required after this script to load the NVIDIA kernel modules.
 
@@ -49,33 +53,27 @@ sudo ./nvidia-gpu-container-setup.sh
 
 ➡️ This script does not require a reboot but does restart the Docker service.
 
-⸻
+## Example workflow
 
-Notes
+### Install NVIDIA drivers
 
-⚠️ System Requirements
-	•	Debian Bookworm
-	•	NVIDIA GPU hardware
-	•	Docker installed on the system
-
-⚠️ Limitations
-	•	These scripts are designed for bare metal hosts, not for virtualized environments without direct GPU passthrough.
-
-⸻
-
-Example workflow
-
-# Install NVIDIA drivers
+```bash
 sudo ./nvidia-gpu-debian-driver-install.sh
-# Reboot the machine
+```
+### Reboot the machine
+
+```bash
 sudo reboot
+```
 
-# Set up NVIDIA Container Toolkit
+### Set up NVIDIA Container Toolkit
+
+```bash
 sudo ./nvidia-gpu-container-setup.sh
-
+```
 
 ⸻
 
-License
+License MIT
 
 These scripts are provided as-is without any warranty. Use at your own risk.

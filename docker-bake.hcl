@@ -16,7 +16,7 @@ target "builder-ci" {
     node_version           = NODE_VERSION
     nvm_version            = NVM_VERSION
   }
-  dockerfile = "local/Dockerfile"
+  dockerfile = "Dockerfile"
   tags = [
     LATEST_BUILDER_IMAGE,
     notequal("", VERSION) ? BUILDER_IMAGE_VERSION : "",
@@ -44,7 +44,7 @@ target "builder" {
     node_version           = NODE_VERSION
     nvm_version            = NVM_VERSION
   }
-  dockerfile = "local/Dockerfile"
+  dockerfile = "Dockerfile"
   tags = [
     LATEST_BUILDER_IMAGE,
     notequal("", VERSION) ? BUILDER_IMAGE_VERSION : "",
