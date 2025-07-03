@@ -29,12 +29,24 @@ type Service struct {
 	nethttp.Handler
 	// authUser is used to verify user authentication
 	authUser AuthUser
+	// userRecoveryKey is used to manage user recovery keys
+	userRecoveryKey *UserRecoveryKeyService
+	// vegetable is used to manage vegetables
+	vegetable *VegetableService
+	// order is used to manage orders
+	order *OrderService
 	// user is used to manage users
 	user *UserService
 }
 
 type Storage interface {
+	VegetableStorage
+	OrderStorage
 	UserStorage
+}
+
+type ImageValidator interface {
+	VegetableImageValidator
 }
 
 type AuthUser interface {
@@ -45,7 +57,7 @@ var (
 	ErrRecoveryKeyNotFound = fmt.Errorf("recovery key not found")
 )
 
-func NewService(authUser AuthUser, storage Storage, btcService *btc.BTC) (*Service, error) {
+func NewService(authUser AuthUser, storage Storage, btcService *btc.BTC, vault UserRecoveryKeyVault, imageValidator ImageValidator) (*Service, error) {
 	mux := nethttp.NewServeMux()
 
 	frontendDir := config.GetString(uiBuildDirConfig)
@@ -54,29 +66,41 @@ func NewService(authUser AuthUser, storage Storage, btcService *btc.BTC) (*Servi
 		return nil, fmt.Errorf("http start api, server side ui render: %w", err)
 	}
 	mux.Handle("GET /ui/config/firebase", nethttp.HandlerFunc(uiconfig.Firebase))
-	mux.Handle("GET /ui/config/googlemaps", nethttp.HandlerFunc(uiconfig.GoogleMaps))
 	mux.Handle("GET /ui/public", nethttp.StripPrefix("/ui", nethttp.FileServer(nethttp.Dir(frontendDir))))
 	mux.Handle("GET /ui", uiServe)
 	mux.Handle("GET /price", nethttp.HandlerFunc(btcService.Price))
 	mux.Handle("GET /cgv", nethttp.HandlerFunc(func(w nethttp.ResponseWriter, r *nethttp.Request) {
-		fmt.Fprintf(w, "Welcome to the local BackEnd!")
+		fmt.Fprintf(w, "Bienvenue à Autostop BackEnd!")
 	}))
 	mux.Handle("GET /confidentiality", nethttp.HandlerFunc(func(w nethttp.ResponseWriter, r *nethttp.Request) {
-		fmt.Fprintf(w, "Welcome to the local BackEnd!")
+		fmt.Fprintf(w, "Bienvenue à Autostop BackEnd!")
 	}))
 	mux.Handle("GET /info", nethttp.HandlerFunc(func(w nethttp.ResponseWriter, r *nethttp.Request) {
-		fmt.Fprintf(w, "Welcome to the local BackEnd!")
+		fmt.Fprintf(w, "Bienvenue à Autostop BackEnd!")
 	}))
 	mux.Handle("GET /", nethttp.FileServer(nethttp.Dir(frontendDir)))
 
-	userService, err := NewUserService(mux, storage)
+	orderService, err := NewOrderService(mux, storage)
+	if err != nil {
+		return nil, fmt.Errorf("http api v1 new order service: %w", err)
+	}
+	vegetableService, err := NewVegetableService(mux, storage, imageValidator)
+	if err != nil {
+		return nil, fmt.Errorf("http api v1 new vegetable service: %w", err)
+	}
+	userService, err := NewUserService(mux, storage, vault)
 	if err != nil {
 		return nil, fmt.Errorf("http api v1 new user service: %w", err)
 	}
 	serviceV1 := &Service{
-		user:     userService,
-		authUser: authUser,
-		Handler:  mux,
+		userRecoveryKey: &UserRecoveryKeyService{
+			vault: vault,
+		},
+		vegetable: vegetableService,
+		user:      userService,
+		authUser:  authUser,
+		order:     orderService,
+		Handler:   mux,
 	}
 	mux.HandleFunc("POST /run", serviceV1.run)
 
@@ -99,7 +123,7 @@ func (s *Service) Status(w nethttp.ResponseWriter, r *nethttp.Request) {
 
 func (s *Service) authCheck(w nethttp.ResponseWriter, r *nethttp.Request) {
 
-	userID := requestUserID(r)
+	userID := authenticatedUserID(r)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(nethttp.StatusOK)

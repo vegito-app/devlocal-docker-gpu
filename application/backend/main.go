@@ -41,7 +41,13 @@ func main() {
 	btcClient := btc.NewBTC()
 	defer btcClient.Close()
 
-	service, err := api.NewService(firebaseApp, storage, btcClient, vaultClient)
+	vegetableClient, err := vegetable.NewVegetableClient(storage)
+	if err != nil {
+		log.Fatal().Err(err).Msg("new vegetable client")
+	}
+	defer vegetableClient.Close()
+
+	service, err := api.NewService(firebaseApp, storage, btcClient, vaultClient, vegetableClient)
 	if err != nil {
 		log.Fatal().Err(err).Msg("create api services")
 	}
@@ -53,6 +59,9 @@ func main() {
 		}
 	}()
 
+	group.Go(func() error {
+		return vegetableClient.RunValidatedImagesSubscription(ctx)
+	})
 
 	group.Go(func() error {
 		return http.StartAPI(ctx, service)
