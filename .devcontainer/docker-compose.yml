@@ -1,7 +1,7 @@
 services:
   dev:
     container_name: dev
-    # image: europe-west1-docker.pkg.dev/moov-dev-439608/docker-repository-public/moov-dev-439608:builder-latest
+    # image: europe-west1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT_ID}/docker-repository-public/${GOOGLE_CLOUD_PROJECT_ID}:builder-latest
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile

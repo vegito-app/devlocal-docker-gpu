@@ -1,4 +1,5 @@
 GIT_HEAD_VERSION ?= $(shell git describe --tags --abbrev=7 --match "v*" 2>/dev/null)
+GOOGLE_CLOUD_PROJECT_ID ?= moov-dev-439608
 INFRA_PROJECT_NAME ?= moov
 VERSION ?= $(GIT_HEAD_VERSION)
 ifeq ($(VERSION),)
@@ -10,7 +11,7 @@ export
 -include local.mk
 -include docker/docker.mk
 
-images: ù
+images:
 	@$(MAKE) -j docker-images-local-arch
 .PHONY: images
 

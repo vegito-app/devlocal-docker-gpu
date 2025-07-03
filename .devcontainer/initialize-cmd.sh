@@ -43,7 +43,7 @@ MAKE_LOCAL_APPLICATION_TESTS_RUN_ON_START=true
 #------------------------------------------------------- 
 # The following variables are used with the local development environment.
 # 
-DEV_GOOGLE_CLOUD_PROJECT_ID=moov-dev-439608
+DEV_GOOGLE_CLOUD_PROJECT_ID=${GOOGLE_CLOUD_PROJECT_ID}
 DEV_GOOGLE_IDP_OAUTH_KEY_SECRET_ID=projects/${DEV_GOOGLE_CLOUD_PROJECT_ID}/secrets/google-idp-oauth-key/versions/latest
 DEV_GOOGLE_IDP_OAUTH_CLIENT_ID_SECRET_ID=projects/${DEV_GOOGLE_CLOUD_PROJECT_ID}/secrets/google-idp-oauth-client-id/versions/latest
 DEV_STRIPE_KEY_SECRET_SECRET_ID=projects/${DEV_GOOGLE_CLOUD_PROJECT_ID}/secrets/stripe-key/versions/latest
@@ -101,38 +101,6 @@ workspaceFile=${PWD}/vscode.code-workspace
       "path": ".devcontainer"
     },
     {
-      "name": "Documentation",
-      "path": "docs",
-    },
-    {
-      "name": "Application Backend - Go",
-      "path": "application/backend"
-    },
-    {
-      "name": "Application Mobile - Flutter",
-      "path": "application/mobile"
-    },
-    {
-      "name": "Application Web - React",
-      "path": "application/frontend"
-    },
-    {
-      "name": "Application Images - Cleaner - Go",
-      "path": "application/images/cleaner"
-    },
-    {
-      "name": "Application Images - Moderator - Go",
-      "path": "application/images/moderator"
-    },
-    {
-      "name": "Application - Authentication - Firebase Functions",
-      "path": "application/firebase/functions"
-    },
-    {
-      "name": "Application - Run - Terraform",
-      "path": "application/run"
-    },
-    {
       "name": "Local - Builder",
       "path": "local"
     },
@@ -151,30 +119,6 @@ workspaceFile=${PWD}/vscode.code-workspace
     {
       "name": "Local - Clarinet",
       "path": "clarinet-devnet"
-    },
-    {
-      "name": "Infrastructure - Cloud",
-      "path": "infra"
-    },
-    {
-      "name": "Infrastructure - Production - Terraform",
-      "path": "infra/environments/prod"
-    },
-    {
-      "name": "Infrastructure - Staging - Terraform",
-      "path": "infra/environments/staging"
-    },
-    {
-      "name": "Infrastructure - Dev - Terraform",
-      "path": "infra/environments/dev"
-    },
-    {
-      "name": "Infrastructure - Google Cloud - Terraform",
-      "path": "infra/gcloud"
-    },
-    {
-      "name": "Infrastructure - Vault - Production",
-      "path": "infra/environments/prod/vault"
     },
   ],
   "settings": {}
@@ -200,11 +144,11 @@ cat <<'EOF' > $backendLaunchDebug
             "env": {
                 "PORT": "8888",
                 "GOOGLE_APPLICATION_CREDENTIALS": "../../infra/environments/dev/gcloud-credentials.json",
-                "UI_CONFIG_FIREBASE_SECRET_ID": "projects/moov-dev-439608/secrets/firebase-config-web/versions/latest",
-                "UI_CONFIG_GOOGLEMAPS_SECRET_ID": "projects/moov-dev-439608/secrets/googlemaps-web-api-key/versions/latest",
-                "STRIPE_KEY": "projects/moov-dev-439608/secrets/stripe-key/versions/latest",
-                "FIREBASE_PROJECT_ID": "moov-dev-439608",
-                "GCLOUD_PROJECT_ID": "moov-dev-439608",
+                "UI_CONFIG_FIREBASE_SECRET_ID": "projects/${GOOGLE_CLOUD_PROJECT_ID}/secrets/firebase-config-web/versions/latest",
+                "UI_CONFIG_GOOGLEMAPS_SECRET_ID": "projects/${GOOGLE_CLOUD_PROJECT_ID}/secrets/googlemaps-web-api-key/versions/latest",
+                "STRIPE_KEY": "projects/${GOOGLE_CLOUD_PROJECT_ID}/secrets/stripe-key/versions/latest",
+                "FIREBASE_PROJECT_ID": "${GOOGLE_CLOUD_PROJECT_ID}",
+                "GCLOUD_PROJECT_ID": "${GOOGLE_CLOUD_PROJECT_ID}",
                 "FRONTEND_BUILD_DIR": "../frontend/build",
                 "FRONTEND_PUBLIC_DIR": "../frontend/public",
                 "UI_JAVASCRIPT_SOURCE_FILE": "../frontend/build/bundle.js",
@@ -246,7 +190,7 @@ cat <<'EOF' > $mobileLaunchDebug
             "flutterMode": "debug",
             "args": [
               "--dart-define=APPLICATION_BACKEND_URL=http://10.0.2.2:8888",
-              "--dart-define=FIREBASE_STORAGE_PUBLIC_PREFIX=http://10.0.2.2:9199/v0/b/moov-dev-439608.firebasestorage.app/o",            ]
+              "--dart-define=FIREBASE_STORAGE_PUBLIC_PREFIX=http://10.0.2.2:9199/v0/b/${GOOGLE_CLOUD_PROJECT_ID}.firebasestorage.app/o",            ]
         },
         {
             "name": "mobile (profile mode)",
@@ -255,7 +199,7 @@ cat <<'EOF' > $mobileLaunchDebug
             "flutterMode": "profile",
             "args": [
               "--dart-define=APPLICATION_BACKEND_URL=http://10.0.2.2:8080",
-              "--dart-define=FIREBASE_STORAGE_PUBLIC_PREFIX=http://10.0.2.2:9199/v0/b/moov-dev-439608.firebasestorage.app/o",            ]
+              "--dart-define=FIREBASE_STORAGE_PUBLIC_PREFIX=http://10.0.2.2:9199/v0/b/${GOOGLE_CLOUD_PROJECT_ID}.firebasestorage.app/o",            ]
         },
         {
             "name": "mobile (release mode)",
@@ -264,7 +208,7 @@ cat <<'EOF' > $mobileLaunchDebug
             "flutterMode": "release",
             "args": [
               "--dart-define=APPLICATION_BACKEND_URL=http://10.0.2.2:8080",
-              "--dart-define=FIREBASE_STORAGE_PUBLIC_PREFIX=http://10.0.2.2:9199/v0/b/moov-dev-439608.firebasestorage.app/o",            ]
+              "--dart-define=FIREBASE_STORAGE_PUBLIC_PREFIX=http://10.0.2.2:9199/v0/b/${GOOGLE_CLOUD_PROJECT_ID}.firebasestorage.app/o",            ]
         }
     ]
 }

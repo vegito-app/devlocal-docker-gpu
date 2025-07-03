@@ -23,10 +23,10 @@ export GOARCH=$(dpkg --print-architecture)
 EOF
 
 cat <<'EOF' >> ~/.bashrc
-alias hi="docker run --rm -it --privileged -v /:/host --network=host europe-west1-docker.pkg.dev/moov-dev-439608/docker-repository-public/moov-dev-439608:builder-latest sudo chroot /host iftop -i eno1"
-alias hh="docker run --rm -it --privileged -v /:/host --network=host europe-west1-docker.pkg.dev/moov-dev-439608/docker-repository-public/moov-dev-439608:builder-latest sudo chroot /host htop"
-alias h="docker run --rm -it --privileged -v /:/host --network=host europe-west1-docker.pkg.dev/moov-dev-439608/docker-repository-public/moov-dev-439608:builder-latest sudo chroot /host htop"
-alias r="docker run --rm -it --privileged -v /:/host --network=host europe-west1-docker.pkg.dev/moov-dev-439608/docker-repository-public/moov-dev-439608:builder-latest sudo chroot /host"
+alias hi="docker run --rm -it --privileged -v /:/host --network=host europe-west1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT_ID}/docker-repository-public/${GOOGLE_CLOUD_PROJECT_ID}:builder-latest sudo chroot /host iftop -i eno1"
+alias hh="docker run --rm -it --privileged -v /:/host --network=host europe-west1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT_ID}/docker-repository-public/${GOOGLE_CLOUD_PROJECT_ID}:builder-latest sudo chroot /host htop"
+alias h="docker run --rm -it --privileged -v /:/host --network=host europe-west1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT_ID}/docker-repository-public/${GOOGLE_CLOUD_PROJECT_ID}:builder-latest sudo chroot /host htop"
+alias r="docker run --rm -it --privileged -v /:/host --network=host europe-west1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT_ID}/docker-repository-public/${GOOGLE_CLOUD_PROJECT_ID}:builder-latest sudo chroot /host"
 EOF
 
 # NPM

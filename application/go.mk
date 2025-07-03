@@ -4,7 +4,7 @@ GO_MODULES := \
 	application/backend \
 	application/images \
 	application/firebase/functions/auth \
-	local/proxy
+	proxy
 
 go-mod-tidy: $(GO_MODULES:%=go-%-mod-tidy)
 .PHONY: go-mod-tidy
