@@ -1,12 +1,17 @@
-# local
-#### The Ultimate Remote Docker-based Development Environment
+## The Ultimate Remote Docker Based Development Environment
 
-Integrate this repository into your project as a *local* or '.local* development environment folder, for example using git subtree.
+![image](https://github.com/user-attachments/assets/2b24c0b6-d77d-45d1-a16d-e8b2b134601b)
+
+Integrate this repository into your project as a folder *local* or *.local* or *dev*, etc ... 
+
+Example using git subtree:
 
 ```bash
 git subtree add --prefix local https://github.com/vegito-app/devlocal-docker-gpu.git main --squash
 ```
-Depending on your other project's assets, your project tree should now look like:
+
+Depending on other assets of a current project, `tree` should now show something like:
+
 ```
 dev@94476426acc6:/workspaces/my-project$ tree -L 1 .
 .
@@ -19,7 +24,12 @@ dev@94476426acc6:/workspaces/my-project$ tree -L 1 .
 |-- local  <----- your project now embeds a git subtree folder of this repository
 ```
 
-![image](https://github.com/user-attachments/assets/2b24c0b6-d77d-45d1-a16d-e8b2b134601b)
+Makefile targets are available by including `local.mk` from the top level Makefile:
+
+```Makefile
+include local/local.mk
+```
+
 
 ---
 
