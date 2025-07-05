@@ -1,4 +1,4 @@
-## The Ultimate Remote Docker Based Development Environment
+## Local Docker Based Development Environment + GPU features 
 
 ![image](https://github.com/user-attachments/assets/2b24c0b6-d77d-45d1-a16d-e8b2b134601b)
 
