@@ -42,4 +42,6 @@ bg_pids+=("$!")
 socat TCP-LISTEN:9299,fork,reuseaddr TCP:firebase-emulators:9399 > /tmp/socat-firebase-emulators-9299.log 2>&1 &
 bg_pids+=("$!")
 
-docker compose -f ${LOCAL_DIR}/docker-compose.yml up firebase-emulators 2>&1
+docker_compose=${LOCAL_DOCKER_COMPOSE:-docker compose -f ${LOCAL_DIR}/docker-compose.yml}
+
+${docker_compose} up firebase-emulators 2>&1

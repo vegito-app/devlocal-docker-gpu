@@ -1,9 +1,9 @@
 
-LATEST_BUILDER_IMAGE = $(PUBLIC_IMAGES_BASE):builder-latest
+LATEST_BUILDER_IMAGE ?= $(PUBLIC_IMAGES_BASE):builder-latest
 
 LOCAL_DIR ?= $(CURDIR)
 
-LOCAL_DOCKER_COMPOSE = docker compose -f $(LOCAL_DIR)/docker-compose.yml
+LOCAL_DOCKER_COMPOSE ?= docker compose -f $(LOCAL_DIR)/docker-compose.yml
 
 local-application-install: application-frontend-build application-frontend-bundle backend-install 
 .PHONY: local-application-install
@@ -20,7 +20,7 @@ endif
 BUILDER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE_WRITE= type=local,dest=$(BUILDER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE)
 
 local-docker-compose-dev-image-pull:
-	$(LOCAL_DOCKER_COMPOSE) pull dev
+	@$(LOCAL_DOCKER_COMPOSE) pull dev
 .PHONY: local-docker-compose-dev-image-pull
 
 local-docker-compose-dev-logs:
@@ -31,7 +31,7 @@ local-docker-compose-dev-logs-f:
 	@$(LOCAL_DOCKER_COMPOSE) logs -f dev
 .PHONY: local-docker-compose-dev-logs-f
 
-LOCAL_DOCKER_COMPOSE_SERVICES = \
+LOCAL_DOCKER_COMPOSE_SERVICES ?= \
   android-studio \
   vault-dev \
   firebase-emulators \
@@ -46,7 +46,7 @@ local-docker-compose-rm-all: $(LOCAL_DOCKER_COMPOSE_SERVICES:%=local-%-docker-co
 .PHONY: local-docker-compose-rm-all
 
 $(LOCAL_DOCKER_COMPOSE_SERVICES:%=local-%-image-pull):
-	@$(LOCAL_DOCKER_COMPOSE) pull $(@:local-%-image-pull=%)
+	$(LOCAL_DOCKER_COMPOSE) pull $(@:local-%-image-pull=%)
 .PHONY: $(LOCAL_DOCKER_COMPOSE_SERVICES:%=local-%-image-pull)
 
 $(LOCAL_DOCKER_COMPOSE_SERVICES):

@@ -33,7 +33,7 @@ echo "AVD à utiliser : ${avd_to_use}"
 
 echo "Lancement de l’AVD nommé : ${avd_to_use}"
 emulator -avd "${avd_to_use}" \
-  -gpu ${ANDROID_GPU_MODE:-swiftshader_indirect} \
+  -gpu ${LOCAL_ANDROID_GPU_MODE:-swiftshader_indirect} \
   -noaudio -no-snapshot-load \
   -no-boot-anim \
    -wipe-data \
@@ -52,6 +52,6 @@ appium --address 0.0.0.0 --port 4723 \
 bg_pids+=($!)
 echo "Appium est prêt à accepter les connexions sur le port 4723."
 
-emulator-data-load.sh ${IMAGE_DIR:-./images}
+emulator-data-load.sh ${LOCAL_APPLICATION_TESTS_MOBILE_IMAGES_DIR:-./images}
 
 sleep infinity

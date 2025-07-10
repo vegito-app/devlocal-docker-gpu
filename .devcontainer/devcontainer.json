@@ -9,7 +9,6 @@
     "dev"
   ],
   "initializeCommand": "${localWorkspaceFolder}/.devcontainer/initialize-cmd.sh",
-  "postCreateCommand": "${localWorkspaceFolder}/.devcontainer/post-create-cmd.sh",
   "workspaceFolder": "/workspaces/refactored-winner",
   "customizations": {
     "vscode": {

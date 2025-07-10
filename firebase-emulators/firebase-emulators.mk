@@ -5,11 +5,11 @@ FIREBASE_EMULATORS_IMAGE_DOCKER_BUILDX_LOCAL_CACHE_READ = type=local,src=$(FIREB
 endif
 FIREBASE_EMULATORS_IMAGE_DOCKER_BUILDX_LOCAL_CACHE_WRITE= type=local,dest=$(FIREBASE_EMULATORS_IMAGE_DOCKER_BUILDX_LOCAL_CACHE)
 
-FIREBASE_EMULATORS_DIR = $(LOCAL_DIR)/firebase-emulators
+FIREBASE_EMULATORS_DIR ?= $(LOCAL_DIR)/firebase-emulators
 FIREBASE_EMULATORS = cd $(FIREBASE_EMULATORS_DIR) && firebase
 # This is a comma separated list of emulator names.# Valid options are:
 # ["auth","functions","firestore","database","hosting","pubsub","storage","eventarc","dataconnect"]
-FIREBASE_EMULATORS_SERVICES = auth,functions,firestore,storage,pubsub
+FIREBASE_EMULATORS_SERVICES ?= auth,functions,firestore,storage,pubsub
 
 local-firebase-emulators-prepare: local-firebase-emulators-install local-firebase-emulators-init
 .PHONY: local-firebase-emulators-prepare
@@ -34,13 +34,21 @@ local-firebase-emulators-functions-serve:
 	npm run serve
 .PHONY: local-firebase-emulators-functions-serve
 
-FIREBASE_EMULATORS_DATA := $(LOCAL_DIR)/firebase-emulators/data
+LOCAL_FIREBASE_EMULATORS_DATA ?= $(LOCAL_DIR)/firebase-emulators/data
 
-local-firebase-emulators-start: local-firebase-emulators-install
+LOCAL_FIREBASE_EMULATORS_CONFIG_JSON ?= $(LOCAL_DIR)/firebase-emulators/firebase.json
+
+local-firebase-emulators-config-json: $(LOCAL_FIREBASE_EMULATORS_CONFIG_JSON)
+.PHONY: local-firebase-emulators-config-json	
+
+$(LOCAL_FIREBASE_EMULATORS_CONFIG_JSON):
+	@$(FIREBASE_EMULATORS_DIR)/firebase-emulators-config-create-json.sh
+
+local-firebase-emulators-start: local-firebase-emulators-install local-firebase-emulators-config-json
 	@unset GOOGLE_APPLICATION_CREDENTIALS || true ; \
 	  $(FIREBASE_EMULATORS) emulators:start \
-	    --import=$(FIREBASE_EMULATORS_DATA) \
-	    --export-on-exit $(FIREBASE_EMULATORS_DATA) \
+	    --import=$(LOCAL_FIREBASE_EMULATORS_DATA) \
+	    --export-on-exit $(LOCAL_FIREBASE_EMULATORS_DATA) \
 	    --log-verbosity DEBUG \
 	    --only $(FIREBASE_EMULATORS_SERVICES)
 .PHONY: local-firebase-emulators-start

@@ -10,14 +10,14 @@ export HISTSIZE=50000
 export HISTFILESIZE=100000
 EOF
 
-DEV_CONTAINER_CACHE=${LOCAL_DIR:-${PWD}}/.containers/dev
-mkdir -p $DEV_CONTAINER_CACHE
+local_container_cache=${LOCAL_ANDROID_STUDIO_CONTAINER_CACHE:-${LOCAL_DIR:-${PWD}}/.containers/dev}
+mkdir -p $local_container_cache
 
 # GO
 GOPATH=${HOME}/go
 rm -rf $GOPATH
-mkdir -p ${DEV_CONTAINER_CACHE}/gopath
-ln -sf ${DEV_CONTAINER_CACHE}/gopath $GOPATH
+mkdir -p ${local_container_cache}/gopath
+ln -sf ${local_container_cache}/gopath $GOPATH
 cat <<'EOF' >> ~/.bashrc
 export GOARCH=$(dpkg --print-architecture)
 EOF
@@ -32,22 +32,23 @@ EOF
 # NPM
 NPM_DIR=${HOME}/.npm
 [ -d $NPM_DIR ] && mv $NPM_DIR ${NPM_DIR}_back
-mkdir -p ${DEV_CONTAINER_CACHE}/npm
-ln -sf ${DEV_CONTAINER_CACHE}/npm $NPM_DIR
+mkdir -p ${local_container_cache}/npm
+ln -sf ${local_container_cache}/npm $NPM_DIR
  
 # GCP
 GCLOUD_CONFIG=${HOME}/.config/gcloud
-mkdir -p $GCLOUD_CONFIG ${DEV_CONTAINER_CACHE}/gcloud
+mkdir -p $GCLOUD_CONFIG ${local_container_cache}/gcloud
 rm -rf $GCLOUD_CONFIG
-ln -sf ${DEV_CONTAINER_CACHE}/gcloud $GCLOUD_CONFIG
+ln -sf ${local_container_cache}/gcloud $GCLOUD_CONFIG
 
 # Dev container docker socket locally forwarded from distant dockerd host VM
 socat TCP-LISTEN:2375,fork UNIX-CONNECT:/var/run/docker.sock &
 
 # Needed with github Codespaces which can change the workspace mount specified inside docker-compose.
-current_workspace=$(dirname $PWD)
-if [ "$current_workspace" != "/workspaces" ] ; then
-    sudo ln -s $current_workspace /workspaces
+current_workspace=$PWD
+if [ "$current_workspace" != "$HOST_PWD" ] ; then
+    sudo ln -s $current_workspace $HOST_PWD 2>&1 || true
+    echo "Linked current workspace $current_workspace to $HOST_PWD"
 fi
 
 exec "$@"

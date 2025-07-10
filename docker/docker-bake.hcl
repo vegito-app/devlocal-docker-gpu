@@ -3,6 +3,10 @@ variable "VERSION" {
   default     = "dev"
 }
 
+variable "APPLICATION_DIR" {
+  default = "application"
+}
+
 variable "NODE_VERSION" {
   description = "current Node version"
   default     = "22.14.0"

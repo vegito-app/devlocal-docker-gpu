@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -eux
 
 # 📌 List of PIDs of background processes
 bg_pids=()
@@ -17,7 +17,7 @@ kill_jobs() {
 # 🚨 Register cleanup function to run on script exit
 trap kill_jobs EXIT
 
-case "${ANDROID_GPU_MODE}" in
+case "${LOCAL_ANDROID_GPU_MODE}" in
     "host")
         display-start-xpra.sh &
         bg_pids+=("$!")
@@ -27,6 +27,9 @@ case "${ANDROID_GPU_MODE}" in
         bg_pids+=("$!")
         ;;
 esac
+
+[ "${LOCAL_ANDROID_STUDIO_ENV_SETUP}" = "true" ] && \
+    studio-caches-refresh.sh
 
 # Forward firebase-emulators to container as localhost
 socat TCP-LISTEN:9299,fork,reuseaddr TCP:firebase-emulators:9399 > /tmp/socat-firebase-emulators-9399.log 2>&1 &
@@ -74,12 +77,16 @@ alias run-android='flutter run -d android'
 sudo chown root:kvm /dev/kvm
 sudo chmod 660 /dev/kvm
 
-# Needed with github Codespaces which can change the workspace mount specified inside docker-compose.
-current_workspace=$(dirname $PWD)
-if [ "$current_workspace" != "/workspaces" ] ; then
-    sudo ln -s $current_workspace /workspaces
+echo fs.inotify.max_user_watches=524288 |  sudo tee -a /etc/sysctl.conf; sudo sysctl -p
+
+if [ "${LOCAL_ANDROID_STUDIO_APPIUM_EMULATOR_AVD_ON_START}" = "true" ]; then
+    appium-emulator-avd.sh &
+    bg_pids+=("$!")
 fi
 
-echo fs.inotify.max_user_watches=524288 |  sudo tee -a /etc/sysctl.conf; sudo sysctl -p
+if [ "${LOCAL_ANDROID_STUDIO_ON_START}" = "true" ]; then
+    android-studio.sh &
+    bg_pids+=("$!")
+fi
 
 exec "$@"

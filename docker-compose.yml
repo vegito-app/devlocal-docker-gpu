@@ -7,14 +7,14 @@ volumes:
 services:
   dev:
     container_name: dev
-    image: ${BUILDER_IMAGE}
+    image: ${BUILDER_IMAGE:-europe-west1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT_ID}/docker-repository-public/${GOOGLE_CLOUD_PROJECT_ID}:builder-latest}
     env_file:
       - .env
     environment:
-      HOST_PWD: ${PWD:-/workspaces/refactored-winner}
+      HOST_PWD: ${PWD}
       MAKE_DEV_ON_START: ${MAKE_DEV_ON_START:-true}
     volumes:
-      - ${PWD:-/workspaces/refactored-winner}:${PWD:-/workspaces/refactored-winner}:cached
+      - ${PWD}:${PWD}:cached
       - /var/run/docker.sock:/var/run/docker.sock
       - /dev:/dev
       - /lib/modules:/lib/modules:ro
@@ -22,17 +22,17 @@ services:
     cap_add:
       - SYS_ADMIN
       - NET_ADMIN
-    working_dir: ${PWD:-/workspaces/refactored-winner}
+    working_dir: ${PWD}
     command: |
       bash -c '
       make docker-sock
       if [ "$${MAKE_DEV_ON_START}" = "true" ] ; then
         make dev
         if [ "$${MAKE_LOCAL_APPLICATION_TESTS_RUN_ON_START}" = "true" ] ; then
-          [ "$${LOCAL_ANDROID_STUDIO_BUILD_APK_ON_START}" = "true" ] && \
+          [ "$${LOCAL_LOCAL_ANDROID_STUDIO_BUILD_APK_ON_START}" = "true" ] && \
             make -j \
               application-mobile-flutter-build-apk \
-              android-studio-emulator-restart
+              # android-studio-emulator-restart
           make application-mobile-apk-run &
           until make local-application-tests-check-env ; do
             echo "[application-tests] Waiting for environment to be ready..."
@@ -52,14 +52,15 @@ services:
     restart: unless-stopped
     image: ${APPLICATION_BACKEND_IMAGE:-europe-west1-docker.pkg.dev/moov-438615/docker-repository/utrade:application-backend-latest}
     build:
-      context: ..
-      dockerfile: application/backend/Dockerfile
+      context: ${APPLICATION_DIR}
+      dockerfile: backend/Dockerfile
       args:
         builder_image: ${BUILDER_IMAGE}
 
     env_file:
       - .env
     environment:
+      HOST_PWD: ${PWD}
       GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS:-/workspaces/refactored-winner/.devcontainer/gcloud/infra/application_default_credentials.json}
       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-${GOOGLE_CLOUD_PROJECT_ID}}
       GCLOUD_PROJECT_ID: ${GCLOUD_PROJECT_ID:-${GOOGLE_CLOUD_PROJECT_ID}}
@@ -72,7 +73,7 @@ services:
       VAULT_ADDR: http://vault-dev:8200
       VAULT_TOKEN: root
     volumes:
-      - ${PWD:-/workspaces/refactored-winner}:${PWD:-/workspaces/refactored-winner}:cached
+      - ${PWD}:${PWD}:cached
     networks:
       - dev
 
@@ -84,13 +85,14 @@ services:
     env_file:
       - .env
     environment:
+      HOST_PWD: ${PWD}
       FIREBASE_AUTH_EMULATOR_HOST: http://localhost:9099
       FIREBASE_PUBSUB_EMULATOR_HOST: http://localhost:8085
       FIRESTORE_EMULATOR_HOST: http://localhost:8090
     volumes:
-      - ${HOST_PWD:-${PWD:-/workspaces/refactored-winner}}:${PWD:-/workspaces/refactored-winner}:cached
+      - ${HOST_PWD:-${PWD}}:${PWD}:cached
       # - firebase-emulators-cache:/home/devuser/.cache/firebase/emulators
-    working_dir: ${PWD:-/workspaces/refactored-winner}
+    working_dir: ${PWD}
     command: |
       bash -c '
       set -eu
@@ -109,15 +111,16 @@ services:
     env_file:
       - .env
     environment:
+      HOST_PWD: ${PWD}
       DOCKER_HOST: "unix:///run/user/1000/docker.sock"
     volumes:
       - /dev:/dev
       - /lib/modules:/lib/modules
-      - ${HOST_PWD:-${PWD:-/workspaces/refactored-winner}}:${PWD:-/workspaces/refactored-winner}:cached
+      - ${HOST_PWD:-${PWD}}:${PWD}:cached
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
-    working_dir: ${PWD:-/workspaces/refactored-winner}
+    working_dir: ${PWD}
     command: |
       bash -c '
       set -eu
@@ -134,7 +137,7 @@ services:
     env_file:
       - .env
     environment:
-      PROJECT_DIR: ${PWD:-/workspaces/refactored-winner}
+      HOST_PWD: ${PWD}
       APK_PATH: ${LOCAL_ANDROID_STUDIO_APK_PATH:-mobile/build/app/outputs/flutter-apk/app-debug.apk}
       # DISPLAY_RESOLUTION: "${DISPLAY_RESOLUTION:-1920x1080}"
       DISPLAY_RESOLUTION: 1920x1080
@@ -142,14 +145,17 @@ services:
       DISPLAY: "${DISPLAY:-:20}"
       FLUTTER: flutter
       CHROME_LOG_FILE: /tmp/chrome_debug.log
-      ANDROID_STUDIO_LOG_LEVEL: DEBUG
-      ANDROID_STUDIO_ENV_SETUP: ${ANDROID_STUDIO_ENV_SETUP:-false}
-      ANDROID_GPU_MODE: ${LOCAL_ANDROID_STUDIO_ANDROID_GPU_MODE:-swiftshader_indirect}
+      LOCAL_ANDROID_STUDIO_LOG_LEVEL: DEBUG
+      LOCAL_ANDROID_STUDIO_ENV_SETUP: ${LOCAL_ANDROID_STUDIO_ENV_SETUP:-false}
+      LOCAL_ANDROID_STUDIO_CONTAINER_CACHE: ${LOCAL_ANDROID_STUDIO_CONTAINER_CACHE:-${PWD}/local/.containers/android-studio}
+      LOCAL_ANDROID_STUDIO_ON_START: ${LOCAL_ANDROID_STUDIO_ON_START:-false}
+      LOCAL_ANDROID_GPU_MODE: ${LOCAL_ANDROID_STUDIO_ANDROID_GPU_MODE:-swiftshader_indirect}
       ANDROID_AVD_NAME: ${LOCAL_ANDROID_STUDIO_ANDROID_AVD_NAME:-Pixel_6_Playstore}
-      IMAGE_DIR: ${PWD:-/workspaces/refactored-winner}/application/tests/mobile_images
+      LOCAL_APPLICATION_TESTS_MOBILE_IMAGES_DIR: ${PWD}/application/tests/mobile_images
+
     privileged: true
     volumes:
-      - ${HOST_PWD:-${PWD:-/workspaces/refactored-winner}}:${PWD:-/workspaces/refactored-winner}:cached
+      - ${HOST_PWD:-${PWD}}:${PWD}:cached
     devices:
       - /dev/kvm
       - /dev/nvidia0
@@ -159,33 +165,22 @@ services:
       - render
       - kvm
       - sgx
-    working_dir: ${PWD:-/workspaces/refactored-winner}/application/mobile
+    working_dir: ${PWD}/application/mobile
     networks:
       dev:
     command: |
       bash -c '
-
       set -eu
-      
-      [ "$${ANDROID_STUDIO_ENV_SETUP}" = "true" ] && \
-        studio-caches-refresh.sh
-
-      [ "$${LOCAL_ANDROID_STUDIO_ON_START}" = "true" ] && \
-        android-studio.sh &
-
-      [ "$${LOCAL_ANDROID_STUDIO_APPIUM_EMULATOR_AVD_ON_START}" = "true" ] && \
-        appium-emulator-avd.sh &
-
       sleep infinity
       '
   vault-dev:
     container_name: vault-dev
-    # image: hashicorp/vault:1.19
     image: ${VAULT_DEV_IMAGE:-europe-west1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT_ID}/docker-repository-public/${GOOGLE_CLOUD_PROJECT_ID}:vault-dev-latest}
 
     cap_add:
       - IPC_LOCK
     environment:
+      HOST_PWD: ${PWD}
       VAULT_DATA: ${PWD:-/workspaces}/.containers/vault/file
       VAULT_CONFIG: ${PWD:-/workspaces}/.containers/vault/config
       VAULT_AUDIT: ${PWD:-/workspaces}/.containers/vault/audit
@@ -193,8 +188,8 @@ services:
       VAULT_DEV_ROOT_TOKEN_ID: root
       VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
     volumes:
-      - ${HOST_PWD:-${PWD:-/workspaces/refactored-winner}}:${PWD:-/workspaces/refactored-winner}:cached
-    working_dir: ${PWD:-/workspaces/refactored-winner}/application
+      - ${HOST_PWD:-${PWD}}:${PWD}:cached
+    working_dir: ${PWD}/application
     command: |
       bash -c '
       set -eu
@@ -209,19 +204,20 @@ services:
     image: ${APPLICATION_TESTS_IMAGE:-europe-west1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT_ID}/docker-repository-private/${GOOGLE_CLOUD_PROJECT_ID}:application-tests-latest}
     environment:
       APPLICATION_BACKEND_URL_DEBUG: http://devcontainer:8888
+      HOST_PWD: ${PWD}
+      LOCAL_APPLICATION_TESTS_DIR: ${PWD}/application/tests
       STORAGE_EMULATOR_HOST: http://${FIREBASE_STORAGE_EMULATOR_HOST:-firebase-emulators:9199}
-      PROJECT_DIR: ${PWD:-/workspaces/refactored-winner}
-      LOCAL_APPLICATION_TESTS_DIR: ${PWD:-/workspaces/refactored-winner}/application/tests
     env_file:
       - .env
     volumes:
-      - ${HOST_PWD:-${PWD:-/workspaces/refactored-winner}}:${PWD:-/workspaces/refactored-winner}:cached
+      - ${HOST_PWD:-${PWD}}:${PWD}:cached
     networks:
       dev:
-    working_dir: ${PWD:-/workspaces/refactored-winner}/application/tests
+    working_dir: ${PWD}/application/tests
     tty: true
     command: |
       bash -c '
-
+      set -eu
+      
       sleep infinity
       '

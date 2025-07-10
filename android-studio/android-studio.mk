@@ -1,5 +1,3 @@
-DEV_DOCKER_COMPOSE_SERVICES += local-android-studio
-
 ANDROID_STUDIO_IMAGE_DOCKER_BUILDX_LOCAL_CACHE=$(CURDIR)/.containers/docker-buildx-cache/android-studio
 $(ANDROID_STUDIO_IMAGE_DOCKER_BUILDX_LOCAL_CACHE):;	@mkdir -p "$@"
 ifneq ($(wildcard $(ANDROID_STUDIO_IMAGE_DOCKER_BUILDX_LOCAL_CACHE)/index.json),)
@@ -42,7 +40,7 @@ local-android-studio-appium-emulator-avd-restart:
 	  echo "[*] Launching emulator..." ; \
 	  echo "Starting android-studio emulator..." ; \
 	  ANDROID_AVD_NAME=$(LOCAL_ANDROID_STUDIO_ANDROID_AVD_NAME) \
-	  ANDROID_GPU_MODE=$(LOCAL_ANDROID_STUDIO_ANDROID_GPU_MODE) \
+	  LOCAL_ANDROID_GPU_MODE=$(LOCAL_ANDROID_STUDIO_ANDROID_GPU_MODE) \
 	  	appium-emulator-avd.sh ; \
 	  sleep infinity ; \
 	'
@@ -96,7 +94,7 @@ local-android-studio-emulator-data-load-mobile-images:
 	set -e ; \
 	echo "Load android-studio emulator data, inputs folder : $$(pwd)" ; \
 	$(LOCAL_DIR)/android-studio/emulator-data-load.sh \
-		$(CURDIR)/application/tests/mobile_images ; \
+		$(APPLICATION_DIR)/tests/mobile_images ; \
 	'
 .PHONY: local-android-studio-emulator-data-load-mobile-images
 

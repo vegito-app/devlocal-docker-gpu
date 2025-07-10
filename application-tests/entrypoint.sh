@@ -4,7 +4,7 @@ set -eu
 
 trap "echo Exited with code $?." EXIT
 
-APPLICATION_TESTS_CONTAINER_CACHE=${PROJECT_DIR}/.containers/e2e-tests
+APPLICATION_TESTS_CONTAINER_CACHE=${HOST_PWD}/.containers/e2e-tests
 mkdir -p $APPLICATION_TESTS_CONTAINER_CACHE
 
 # Bash history
@@ -29,12 +29,6 @@ kill_jobs() {
 
 trap kill_jobs EXIT
 
-# Configuration du workspace (utile avec GitHub Codespaces ou chemins dynamiques)
-current_workspace=$(dirname $PROJECT_DIR)
-if [ "$current_workspace" != "/workspaces" ] ; then
-    sudo ln -s $current_workspace /workspaces
-fi
-
 cat << 'EOF' >> ~/.bashrc
 alias rf='robot --outputdir ${LOCAL_APPLICATION_TESTS_DIR} tests/robot'
 alias h='htop'
@@ -57,3 +51,10 @@ stripe listen --forward-to ${APPLICATION_BACKEND_DEBUG_URL}/paiement/webhook &
 bg_pids+=($!)
 
 exec "$@"
+
+# Needed with github Codespaces which can change the workspace mount specified inside docker-compose.
+current_workspace=$PWD
+if [ "$current_workspace" != "$HOST_PWD" ] ; then
+    sudo ln -s $current_workspace $HOST_PWD 2>&1 || true
+    echo "Linked current workspace $current_workspace to $HOST_PWD"
+fi

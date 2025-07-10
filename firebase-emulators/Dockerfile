@@ -53,6 +53,7 @@ ENV NODE_PATH=$NVM_DIR/versions/node/v${node_version}/lib/node_modules
 ENV PATH=$NVM_DIR/versions/node/v${node_version}/bin:$PATH
 
 COPY container-refresh-caches.sh /usr/local/bin/firebase-emulators-refresh-caches.sh
-COPY container-entrypoint.sh /usr/local/bin/firebase-emulators-entrypoint.sh
+COPY entrypoint.sh /usr/local/bin/firebase-emulators-entrypoint.sh
+COPY firebase-emulators-config-create-json.sh /usr/local/bin/firebase-emulators-config-create-json.sh
 
 ENTRYPOINT [ "firebase-emulators-entrypoint.sh" ]

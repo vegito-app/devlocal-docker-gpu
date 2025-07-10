@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-IMAGE_DIR="${1:-${IMAGE_DIR:-./images}}"
+LOCAL_APPLICATION_TESTS_MOBILE_IMAGES_DIR="${1:-${LOCAL_APPLICATION_TESTS_MOBILE_IMAGES_DIR:-./images}}"
 
 # Vérifie si un appareil est connecté
 if ! adb devices | grep -w "device" >/dev/null; then
@@ -9,9 +9,9 @@ if ! adb devices | grep -w "device" >/dev/null; then
   exit 1
 fi
 
-echo "📁 Chargement des images depuis : $IMAGE_DIR"
-if [ ! -d "$IMAGE_DIR" ]; then
-  echo "❌ Le répertoire $IMAGE_DIR n'existe pas."
+echo "📁 Chargement des images depuis : $LOCAL_APPLICATION_TESTS_MOBILE_IMAGES_DIR"
+if [ ! -d "$LOCAL_APPLICATION_TESTS_MOBILE_IMAGES_DIR" ]; then
+  echo "❌ Le répertoire $LOCAL_APPLICATION_TESTS_MOBILE_IMAGES_DIR n'existe pas."
   exit 1
 fi
 # Wait until the system property sys.boot_completed is 1
@@ -40,7 +40,7 @@ adb shell mkdir -p /sdcard/TestImagesDepot
 adb shell touch /sdcard/TestImagesDepot/.nomedia
 
 # Push all images from the specified directory to the device
-for img in "$IMAGE_DIR"/*.{jpg,jpeg,png}; do
+for img in "$LOCAL_APPLICATION_TESTS_MOBILE_IMAGES_DIR"/*.{jpg,jpeg,png}; do
   [ -e "$img" ] || continue
   filename=$(basename "$img")
   echo "📤 Pushing $filename ..."
