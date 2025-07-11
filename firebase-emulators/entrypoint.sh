@@ -65,4 +65,4 @@ done
 make local-firebase-emulators-pubsub-init
 make local-firebase-emulators-pubsub-check
 
-sleep infinity 
+exec "$@"

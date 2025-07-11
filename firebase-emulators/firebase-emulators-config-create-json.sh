@@ -3,7 +3,7 @@
 # This script is run on the host as devcontainer 'initializeCommand' 
 # (cf. https://containers.dev/implementors/json_reference/#lifecycle-scripts)
 
-set -eux
+set -eu
 
 trap "echo Exited with code $?." EXIT
 localFirebaseEmulatorsStorageBucket=${FIREBASE_EMULATORS_STORAGE_BUCKET:-${GOOGLE_CLOUD_PROJECT_ID}.appspot.com}

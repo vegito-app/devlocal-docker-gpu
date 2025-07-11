@@ -5,6 +5,10 @@ LOCAL_DIR ?= $(CURDIR)
 
 LOCAL_DOCKER_COMPOSE ?= docker compose -f $(LOCAL_DIR)/docker-compose.yml
 
+local-docker-compose-config-show:
+	@$(LOCAL_DOCKER_COMPOSE) config
+.PHONY: local-docker-compose-config-show
+
 local-application-install: application-frontend-build application-frontend-bundle backend-install 
 .PHONY: local-application-install
 
@@ -19,7 +23,7 @@ BUILDER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE_READ = type=local,src=$(BUILDER_IMAGE_DO
 endif
 BUILDER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE_WRITE= type=local,dest=$(BUILDER_IMAGE_DOCKER_BUILDX_LOCAL_CACHE)
 
-local-docker-compose-dev-image-pull:
+local-docker-compose-dev-config-pull:
 	@$(LOCAL_DOCKER_COMPOSE) pull dev
 .PHONY: local-docker-compose-dev-image-pull
 

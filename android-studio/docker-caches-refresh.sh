@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eux
+set -eu
 
 local_container_cache=${LOCAL_ANDROID_STUDIO_CONTAINER_CACHE:-${LOCAL_DIR:-${PWD}}/.containers/android-studio}
 mkdir -p $local_container_cache

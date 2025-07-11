@@ -5,7 +5,7 @@ set -eu
 trap "echo Exited with code $?." EXIT
 
 # Local Container Cache
-local_container_cache=${LOCAL_local_container_cache:-${LOCAL_DIR:-${PWD}}/.containers/dev}
+local_container_cache=${local_container_cache:-${LOCAL_DIR:-${PWD}}/.containers/dev}
 mkdir -p $local_container_cache
 
 cat <<'EOF' >> ~/.bashrc

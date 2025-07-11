@@ -113,6 +113,7 @@ services:
     environment:
       HOST_PWD: ${PWD}
       DOCKER_HOST: "unix:///run/user/1000/docker.sock"
+      LOCAL_CLARINET_DEVNET_CONTAINER_CACHE: ${LOCAL_CLARINET_DEVNET_CONTAINER_CACHE:-${PWD}/local/.containers/clarinet-devnet}
     volumes:
       - /dev:/dev
       - /lib/modules:/lib/modules
